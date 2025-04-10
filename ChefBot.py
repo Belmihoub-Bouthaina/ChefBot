@@ -404,19 +404,20 @@ def main():
                     st.markdown(f"### {'🧂 المكونات' if lang == 'ar' else '🧂 Ingrédients'}")
                     ingredients_section = "\n".join([line for line in recipe_text.split("\n")[1:] if not line.startswith(("1.", "2.", "3.", "4."))])
                     st.markdown(ingredients_section)
-                     # طريقة التحضير
+                    
+                    # طريقة التحضير
                     st.markdown(f"### {'👩‍🍳 طريقة التحضير' if lang == 'ar' else '👩‍🍳 Préparation'}")
                     preparation_section = "\n".join([line for line in recipe_text.split("\n") if line.startswith(("1.", "2.", "3.", "4."))])
                     st.markdown(preparation_section)
-
 
                     # معلومات إضافية
                     st.markdown(f"### {'ℹ️ معلومات إضافية' if lang == 'ar' else 'ℹ️ Informations supplémentaires'}")
                     cols = st.columns(2)
                     with cols[0]:
-                     st.markdown(f"**{'⏱️ وقت التحضير' if lang == 'ar' else '⏱️ Temps de préparation'}:**\n\n{prep_time}")
+                        st.markdown(f"**{'⏱️ وقت التحضير' if lang == 'ar' else '⏱️ Temps de préparation'}:**\n\n{prep_time}")
                     with cols[1]:
-                      st.markdown(f"**{'🍽️ عدد الحصص' if lang == 'ar' else '🍽️ Portions'}:**\n\n{'غير محدد' if lang == 'ar' else 'Non spécifié'}")
+                        st.markdown(f"**{'🍽️ عدد الحصص' if lang == 'ar' else '🍽️ Portions'}:**\n\n{'غير محدد' if lang == 'ar' else 'Non spécifié'}")
+                    
                     # حفظ PDF
                     pdf = create_pdf(recipe_text, lang=lang)
                     st.download_button(

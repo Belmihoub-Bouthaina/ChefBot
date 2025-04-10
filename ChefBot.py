@@ -365,7 +365,8 @@ def main():
                 
                 try:
                     # إعداد نموذج Gemini
-                    API_KEY = "AIzaSyCcnPKnspaBqJiY-xIh0i9zB2KMC_uH_DQ"
+                    import os
+                    API_KEY = os.getenv("GOOGLE_API_KEY")
                     genai.configure(api_key=API_KEY)
                     model = genai.GenerativeModel('gemini-1.5-pro')
                     response = model.generate_content(prompt)
@@ -430,4 +431,9 @@ def main():
                     st.error(f"❌ {'حدث خطأ أثناء توليد الوصفة' if lang == 'ar' else 'Erreur lors de la génération de la recette'}: {str(e)}")
 
 if __name__ == "__main__":
+    import sys
+    import os
+    port = os.environ.get("PORT", 8501)
+    sys.argv.append(f"--server.port={port}")
+    sys.argv.append("--server.enableCORS=false")  # مهم لتفادي مشاكل CORS
     main()

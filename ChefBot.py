@@ -8,21 +8,23 @@ from bidi.algorithm import get_display
 import arabic_reshaper
 from io import BytesIO
 import random
+import os
+import sys
 
-# ========== إعدادات الألوان الجديدة ==========
+# ========== Color Settings ==========
 FOOD_COLORS = {
-    "primary": "#E65100",    # لون اليقطين الدافئ
-    "secondary": "#F57C00",  # لون البرتقالي الفاتح
-    "accent": "#FFA000",     # لون الكركم
-    "background": "#FFF8E1", # لون خلفية فاتح مشابه للقشدة
-    "text": "#5D4037",       # لون بني داكن للكتابة
-    "success": "#388E3C",    # لون أخضر طازج
-    "warning": "#FBC02D",    # لون ليموني
-    "error": "#D32F2F",      # لون طماطم
-    "info": "#1976D2"        # لون سماوي
+    "primary": "#E65100",
+    "secondary": "#F57C00",
+    "accent": "#FFA000",
+    "background": "#FFF8E1",
+    "text": "#5D4037",
+    "success": "#388E3C",
+    "warning": "#FBC02D",
+    "error": "#D32F2F",
+    "info": "#1976D2"
 }
 
-# ========== إعدادات الصفحة ==========
+# ========== Page Setup ==========
 st.set_page_config(
     page_title="مولّد وصفات راقٍ",
     page_icon="🍽️",
@@ -30,7 +32,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ========== مفاتيح الترجمة ==========
+# ========== Translation Keys ==========
 lang_labels = {
     "fr": {
         "title": "🍽️ ChefBot",
@@ -54,7 +56,7 @@ lang_labels = {
         "diet_label": "🥗 Régime alimentaire"
     },
     "ar": {
-        "title": "🍽️  شاف بوت ",
+        "title": "🍽️ شاف بوت",
         "ingredient_label": "🧂 أدخل المكونات",
         "input_hint": "مثال: طماطم، جبن، دجاج",
         "add_btn": "➕ إضافة",
@@ -76,7 +78,7 @@ lang_labels = {
     }
 }
 
-# ========== قوائم الخيارات ==========
+# ========== Option Lists ==========
 difficulty_levels = {
     "fr": ["Facile", "Moyen", "Difficile"],
     "ar": ["سهلة", "متوسطة", "صعبة"]
@@ -97,7 +99,7 @@ diet_types = {
     "ar": ["بدون قيود", "نباتي", "نباتي صرف", "خالي من الجلوتين", "قليل السعرات"]
 }
 
-# ========== قائمة المكونات المقبولة ==========
+# ========== Accepted Ingredients ==========
 valid_ingredients = {
     "fr": [
         "Tomate", "Oignon", "Ail", "Poulet", "Bœuf", "Poisson", "Crevettes",
@@ -115,17 +117,15 @@ valid_ingredients = {
     ]
 }
 
-# ========== تنسيقات CSS المخصصة ==========
+# ========== Custom CSS ==========
 def apply_custom_styles():
     st.markdown(f"""
     <style>
-        /* تنسيقات عامة */
         body {{
             color: {FOOD_COLORS['text']};
             background-color: #f9f9f9;
         }}
         
-        /* الأزرار */
         .stButton>button {{
             background-color: {FOOD_COLORS['primary']};
             color: white;
@@ -140,14 +140,12 @@ def apply_custom_styles():
             transform: scale(1.02);
         }}
         
-        /* حقول الإدخال */
         .stTextInput>div>div>input, 
         .stSelectbox>div>div>select {{
             border-radius: 6px;
             border: 1px solid {FOOD_COLORS['accent']};
         }}
         
-        /* التبويبات */
         .stTabs [data-baseweb="tab-list"] {{
             gap: 10px;
         }}
@@ -162,7 +160,6 @@ def apply_custom_styles():
             color: white !important;
         }}
         
-        /* الأقسام المخصصة */
         .ingredients-section {{
             background-color: #FFF3E0;
             padding: 15px;
@@ -187,7 +184,7 @@ def apply_custom_styles():
     </style>
     """, unsafe_allow_html=True)
 
-# ========== دالة إنشاء PDF ==========
+# ========== PDF Creation ==========
 def create_pdf(text, lang="ar"):
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
@@ -231,16 +228,16 @@ def create_pdf(text, lang="ar"):
     buffer.seek(0)
     return buffer
 
-# ========== واجهة المستخدم ==========
+# ========== Main UI ==========
 def main():
     apply_custom_styles()
     
-    # اختيار اللغة
+    # Language selection
     language_choice = st.sidebar.selectbox("🌐 Choisir la langue / اختر اللغة", ["Français", "العربية"])
     lang = "fr" if language_choice == "Français" else "ar"
     t = lang_labels[lang]
 
-    # عرض العنوان
+    # Title display
     st.markdown(f"""
     <div style="text-align:center; background-color:{FOOD_COLORS['background']}; 
                 padding:20px; border-radius:10px; margin-bottom:20px;
@@ -253,7 +250,7 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # تبويبات إدخال المكونات
+    # Ingredient input tabs
     tab1, tab2 = st.tabs([t["select_ingredients"], t["write_ingredients"]])
 
     with tab1:
@@ -289,7 +286,7 @@ def main():
             else:
                 st.warning(t["warning"])
 
-    # خيارات الوصفة
+    # Recipe options
     st.markdown("---")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -301,18 +298,18 @@ def main():
     with col4:
         diet = st.selectbox(t["diet_label"], diet_types[lang])
 
-    # زر مسح الكل
+    # Clear button
     if st.button(t["clear_btn"]):
         if "ingredients" in st.session_state:
             del st.session_state.ingredients
         st.rerun()
 
-    # عرض المكونات المختارة
+    # Display selected ingredients
     if "ingredients" in st.session_state and st.session_state.ingredients:
         st.markdown(f"**📝 {('المكونات المختارة' if lang == 'ar' else 'Ingrédients sélectionnés')}:**")
         st.write(", ".join(set(st.session_state.ingredients)))
 
-    # توليد الوصفة
+    # Generate recipe
     if st.button(t["generate_btn"]):
         if "ingredients" not in st.session_state or len(st.session_state.ingredients) < 2:
             st.warning(t["warning"])
@@ -364,15 +361,14 @@ def main():
                     """
                 
                 try:
-                    # إعداد نموذج Gemini
-                    import os
+                    # Setup Gemini model
                     API_KEY = os.getenv("GOOGLE_API_KEY")
                     genai.configure(api_key=API_KEY)
                     model = genai.GenerativeModel('gemini-1.5-pro')
                     response = model.generate_content(prompt)
                     recipe_text = response.text
                     
-                    # تنظيف النص الناتج
+                    # Clean the output text
                     clean_recipe = []
                     for line in recipe_text.split("\n"):
                         if line.strip():
@@ -385,10 +381,10 @@ def main():
                     
                     recipe_text = "\n".join(clean_recipe)
                     
-                    # عرض الوصفة
+                    # Display recipe
                     st.success(t["success"])
                     
-                    # اسم الوصفة
+                    # Recipe name
                     st.markdown(f"""
                     <div style="background-color:{FOOD_COLORS['background']}; 
                                 padding:15px; border-radius:10px; margin-bottom:20px;
@@ -400,17 +396,17 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # المكونات
+                    # Ingredients
                     st.markdown(f"### {'🧂 المكونات' if lang == 'ar' else '🧂 Ingrédients'}")
                     ingredients_section = "\n".join([line for line in recipe_text.split("\n")[1:] if not line.startswith(("1.", "2.", "3.", "4."))])
                     st.markdown(ingredients_section)
                     
-                    # طريقة التحضير
+                    # Preparation method
                     st.markdown(f"### {'👩‍🍳 طريقة التحضير' if lang == 'ar' else '👩‍🍳 Préparation'}")
                     preparation_section = "\n".join([line for line in recipe_text.split("\n") if line.startswith(("1.", "2.", "3.", "4."))])
                     st.markdown(preparation_section)
 
-                    # معلومات إضافية
+                    # Additional info
                     st.markdown(f"### {'ℹ️ معلومات إضافية' if lang == 'ar' else 'ℹ️ Informations supplémentaires'}")
                     cols = st.columns(2)
                     with cols[0]:
@@ -418,7 +414,7 @@ def main():
                     with cols[1]:
                         st.markdown(f"**{'🍽️ عدد الحصص' if lang == 'ar' else '🍽️ Portions'}:**\n\n{'غير محدد' if lang == 'ar' else 'Non spécifié'}")
                     
-                    # حفظ PDF
+                    # Save PDF
                     pdf = create_pdf(recipe_text, lang=lang)
                     st.download_button(
                         label=t["download"],
@@ -432,9 +428,7 @@ def main():
                     st.error(f"❌ {'حدث خطأ أثناء توليد الوصفة' if lang == 'ar' else 'Erreur lors de la génération de la recette'}: {str(e)}")
 
 if __name__ == "__main__":
-    import sys
-    import os
     port = os.environ.get("PORT", 8501)
     sys.argv.append(f"--server.port={port}")
-    sys.argv.append("--server.enableCORS=false")  # مهم لتفادي مشاكل CORS
+    sys.argv.append("--server.enableCORS=false")
     main()

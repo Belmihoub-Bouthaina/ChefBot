@@ -1,5 +1,5 @@
 streamlit
 google-generativeai
 reportlab
-python-bidi==0.4.2
+python-bidi
 arabic_reshaper

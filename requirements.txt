@@ -1,0 +1,5 @@
+streamlit
+google-generativeai
+reportlab
+bidi
+arabic_reshaper

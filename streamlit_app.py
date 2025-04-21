@@ -419,8 +419,8 @@ def main():
                     st.download_button(
                         label=t["download"],
                         data=pdf,
-                        file_name=("recette.pdf" if lang == "fr" else "وصفة.pdf")
-                        font_path = os.path.join(os.path.dirname(__file__), "Amiri-Regular.ttf")
+                        file_name=("recette.pdf" if lang == "fr" else "وصفة.pdf"),
+                        font_path = os.path.join(os.path.dirname(__file__), "Amiri-Regular.ttf"),
                         mime="application/pdf",
                         use_container_width=True
                     )

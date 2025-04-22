@@ -24,7 +24,7 @@ FOOD_COLORS = {
 
 # ========== إعدادات الصفحة ==========
 st.set_page_config(
-    page_title="مولّد وصفات راقٍ",
+    page_title="ChefBot",
     page_icon="🍽️",
     layout="centered",
     initial_sidebar_state="expanded"
